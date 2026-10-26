@@ -27,3 +27,11 @@ Phase 4: Fault Tolerance (Error Handling)
 In this phase, I added error handling to simulate a sensor malfunction during the fourth reading. I used a counter to determine when the error should occur and controller.addError() to send the error through the stream. I added an onError callback to display an alert without crashing the program. I also added an onDone callback to confirm that the stream closed successfully.
 
 A try-catch block handles exceptions thrown during code execution, while a stream's onError callback handles errors delivered as asynchronous stream events. Using onError allowed the listener to continue processing the fifth reading after the simulated malfunction.
+
+---------------------
+
+Phase 5: Validation & Reflection
+
+During final testing, I verified that the sensor handshake waited two seconds before displaying the sensor metadata. I checked that the temperature stream generated five readings with one-second delays and that temperatures above 35°C were converted to Fahrenheit. I also tested the simulated sensor malfunction to confirm that the error was reported and the program continued processing the remaining readings without crashing.
+
+One important detail I verified was that the fourth reading was replaced by an error event, while the fifth reading was still processed. The onError callback handled the stream error, and the onDone callback confirmed that the pipeline closed. This assignment helped me understand Futures, asynchronous generators, StreamControllers, and stream error handling. I also learned the importance of testing each phase and committing my work as I progressed.
