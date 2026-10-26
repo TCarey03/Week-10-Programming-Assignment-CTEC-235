@@ -19,3 +19,11 @@ Phase 3: Central Dispatcher (StreamController)
 In this phase, I added a StreamController to create a central pipeline for the temperature readings. I registered a listener using controller.stream.listen() and moved the temperature checking and Fahrenheit conversion into the listener callback. I then used an await for loop to get readings from temperatureStream() and send them into the controller using controller.add(reading).
 
 A StreamController allows the program to manage and distribute events through a central stream instead of processing the generator directly. Setting up the listener before sending readings ensures that it is ready to receive and process the events. I also closed the controller after dispatching all readings to release its resources cleanly.
+
+---------------------
+
+Phase 4: Fault Tolerance (Error Handling)
+
+In this phase, I added error handling to simulate a sensor malfunction during the fourth reading. I used a counter to determine when the error should occur and controller.addError() to send the error through the stream. I added an onError callback to display an alert without crashing the program. I also added an onDone callback to confirm that the stream closed successfully.
+
+A try-catch block handles exceptions thrown during code execution, while a stream's onError callback handles errors delivered as asynchronous stream events. Using onError allowed the listener to continue processing the fifth reading after the simulated malfunction.
