@@ -25,30 +25,45 @@ Future<void> main() async {
 
   print('\nStarting temperature monitoring...');
 
-  // Create the central controller.
   final controller = StreamController<double>();
 
-  // Listen for readings and process them.
-  controller.stream.listen((reading) {
-    if (reading > 35.0) {
-      final fahrenheit = reading * 1.8 + 32;
+  controller.stream.listen(
+    (reading) {
+      if (reading > 35.0) {
+        final fahrenheit = reading * 1.8 + 32;
 
-      print(
-        'HIGH TEMPERATURE WARNING: '
-        '${reading.toStringAsFixed(1)}°C = '
-        '${fahrenheit.toStringAsFixed(1)}°F',
+        print(
+          'HIGH TEMPERATURE WARNING: '
+          '${reading.toStringAsFixed(1)}°C = '
+          '${fahrenheit.toStringAsFixed(1)}°F',
+        );
+      } else {
+        print('Normal temperature: ${reading.toStringAsFixed(1)}°C');
+      }
+    },
+    onError: (error) {
+      print('ALERT: Pipeline caught an error -> $error');
+    },
+    onDone: () {
+      print('Sensor pipeline closed.');
+    },
+    cancelOnError: false,
+  );
+
+  int counter = 0;
+
+  await for (final reading in temperatureStream()) {
+    counter++;
+
+    if (counter == 4) {
+      controller.addError(
+        Exception('Sensor Malfunction: Signal Lost'),
       );
     } else {
-      print('Normal temperature: ${reading.toStringAsFixed(1)}°C');
+      controller.add(reading);
     }
-  });
-
-  // Send readings from the generator into the controller.
-  await for (final reading in temperatureStream()) {
-    controller.add(reading);
   }
 
-  // Close the controller after all readings are dispatched.
   await controller.close();
 
   print('Temperature monitoring complete.');
