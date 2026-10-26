@@ -1,3 +1,5 @@
+import 'dart:async';
+
 Future<String> fetchSensorMetadata() async {
   return await Future.delayed(
     const Duration(seconds: 2),
@@ -23,7 +25,11 @@ Future<void> main() async {
 
   print('\nStarting temperature monitoring...');
 
-  await for (final reading in temperatureStream()) {
+  // Create the central controller.
+  final controller = StreamController<double>();
+
+  // Listen for readings and process them.
+  controller.stream.listen((reading) {
     if (reading > 35.0) {
       final fahrenheit = reading * 1.8 + 32;
 
@@ -35,7 +41,15 @@ Future<void> main() async {
     } else {
       print('Normal temperature: ${reading.toStringAsFixed(1)}°C');
     }
+  });
+
+  // Send readings from the generator into the controller.
+  await for (final reading in temperatureStream()) {
+    controller.add(reading);
   }
+
+  // Close the controller after all readings are dispatched.
+  await controller.close();
 
   print('Temperature monitoring complete.');
 }
